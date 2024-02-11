@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.loginUser = exports.createUser = void 0;
 const dbconfig_1 = __importDefault(require("../../dbconfig/dbconfig"));
+const jsonwebtoken_1 = require("jsonwebtoken");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const createUser = async (args) => {
     const { name, email, password, username } = args.input;
@@ -41,23 +42,25 @@ const loginUser = async (args) => {
     try {
         const [existingUser] = await conn.execute("SELECT * FROM users WHERE username = ?", [username]);
         if (!existingUser || existingUser.length === 0) {
-            // User not found, throw an error
-            // console.log("User not found for username:", username);
             throw new Error("User not found. Please check your username.");
         }
         const user = existingUser[0];
-        const storedHashedPassword = user.password; // เก็บ password ที่ผ่านการ hash
+        console.log("user:", user);
+        const storedHashedPassword = user.password;
         console.log("Stored hashed password:", storedHashedPassword);
-        // console.log("Retrieved user:", user);
-        // Check if the provided password matches the stored hashed password
         const passwordMatch = await bcrypt_1.default.compare(password, storedHashedPassword);
         if (!passwordMatch) {
-            // Password does not match, throw an error
-            // console.log("Invalid password for username:", username);
             throw new Error("Invalid password. Please try again.");
         }
-        // Password matches, return the user
-        return user;
+        const token = (0, jsonwebtoken_1.sign)({ username: user.username }, 'testtest', {
+            expiresIn: '1h',
+        });
+        console.log("token:", token);
+        const authPayload = {
+            token: token,
+            user: user,
+        };
+        return authPayload;
     }
     catch (error) {
         console.error("Error in loginUser:", error);

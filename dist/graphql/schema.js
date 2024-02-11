@@ -31,7 +31,7 @@ const schema = buildSchema(`
     createUser(input: UserInput): User
     updateUser(id: Int!, input: UserInput): User
     createRandomUsers: [User]
-    loginUser(input: UserInputL): User
+    loginUser(input: UserInputL): AuthPayload 
   }
   
   type Query {

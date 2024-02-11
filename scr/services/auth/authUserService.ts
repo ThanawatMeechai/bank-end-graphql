@@ -1,6 +1,7 @@
-import { User, UserInput, UserInputL } from "../../models/user";
+import { AuthPayload, User, UserInput, UserInputL } from "../../models/user";
 import { OkPacket, RowDataPacket, Connection } from "mysql2/promise";
 import createConnection from "../../dbconfig/dbconfig";
+import { sign } from 'jsonwebtoken';
 import bcrypt from "bcrypt";
 
 export const createUser = async (args: { input: UserInput }): Promise<User> => {
@@ -48,7 +49,7 @@ export const createUser = async (args: { input: UserInput }): Promise<User> => {
 
 export const loginUser = async (args: {
   input: UserInputL;
-}): Promise<UserInputL | null> => {
+}): Promise<AuthPayload | null> => {
   const { password, username } = args.input;
   const conn: Connection = await createConnection();
 
@@ -59,29 +60,32 @@ export const loginUser = async (args: {
     );
 
     if (!existingUser || existingUser.length === 0) {
-      // User not found, throw an error
-      // console.log("User not found for username:", username);
       throw new Error("User not found. Please check your username.");
     }
 
     const user: UserInputL = existingUser[0] as UserInputL;
-    const storedHashedPassword = user.password; // เก็บ password ที่ผ่านการ hash
+    console.log("user:",user);
+    
+    const storedHashedPassword = user.password;
     console.log("Stored hashed password:", storedHashedPassword);
-    // console.log("Retrieved user:", user);
 
-    // Check if the provided password matches the stored hashed password
     const passwordMatch = await bcrypt.compare(password, storedHashedPassword);
-
-
-
     if (!passwordMatch) {
-      // Password does not match, throw an error
-      // console.log("Invalid password for username:", username);
       throw new Error("Invalid password. Please try again.");
     }
 
-    // Password matches, return the user
-    return user;
+    const token = sign({ username: user.username }, 'testtest', {
+      expiresIn: '1h',
+    });
+
+    console.log("token:", token);
+
+    const authPayload: AuthPayload = {
+      token: token,
+      user: user as User,
+    };
+
+    return authPayload;
   } catch (error) {
     console.error("Error in loginUser:", error);
     throw new Error("Login failed. Please try again.");
@@ -89,3 +93,4 @@ export const loginUser = async (args: {
     await conn.end();
   }
 };
+
