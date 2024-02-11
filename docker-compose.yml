@@ -10,7 +10,7 @@ services:
       MYSQL_ROOT_HOST: '%'
     ports:
       - "3306:3306"
-    command: --max_connections=500
+    command: --max_conns=500
 
   phpmyadmins:
     image: phpmyadmin/phpmyadmin:latest

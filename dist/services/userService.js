@@ -1,24 +1,21 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createRandomUsers = exports.updateUser = exports.getUsers = exports.getUser = void 0;
-const dbconfig_1 = __importDefault(require("../dbconfig/dbconfig"));
+const dbconfig_1 = require("../dbconfig/dbconfig");
 const getUser = async (args) => {
-    const conn = await (0, dbconfig_1.default)();
+    const conn = await (0, dbconfig_1.getConnection)();
     const [rows] = await conn.execute("SELECT * FROM users WHERE id = ?", [args.id]);
     return rows[0];
 };
 exports.getUser = getUser;
 const getUsers = async () => {
-    const conn = await (0, dbconfig_1.default)();
+    const conn = await (0, dbconfig_1.getConnection)();
     const [rows] = await conn.execute("SELECT * FROM users");
     return rows;
 };
 exports.getUsers = getUsers;
 const updateUser = async (args) => {
-    const conn = await (0, dbconfig_1.default)();
+    const conn = await (0, dbconfig_1.getConnection)();
     const { id, ...userInput } = args.user;
     await conn.execute("UPDATE users SET name = ?, email = ? WHERE id = ?", [
         userInput.name,
@@ -33,7 +30,7 @@ const createRandomUsers = async () => {
     const users = [];
     const batchSize = 100; // ปรับขนาดของ Batch ตามความเหมาะสม
     // สร้างการเชื่อมต่อเดียวกับฐานข้อมูล
-    const conn = await (0, dbconfig_1.default)();
+    const conn = await (0, dbconfig_1.getConnection)();
     try {
         // เปิดการใช้งาน Transaction
         await conn.beginTransaction();

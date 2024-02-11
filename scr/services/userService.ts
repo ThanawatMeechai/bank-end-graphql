@@ -1,12 +1,12 @@
 import { User, UserInput } from "../models/user";
 import { OkPacket, RowDataPacket, Connection } from "mysql2/promise";
-import createConnection from "../dbconfig/dbconfig";
-import bcrypt from 'bcrypt';
+import {getConnection} from "../dbconfig/dbconfig";
+
 
 export const getUser = async (args: {
   id: number;
 }): Promise<User | undefined> => {
-  const conn: Connection = await createConnection();
+  const conn: Connection = await getConnection();
   const [rows] = await conn.execute<RowDataPacket[]>(
     "SELECT * FROM users WHERE id = ?",
     [args.id]
@@ -15,7 +15,7 @@ export const getUser = async (args: {
 };
 
 export const getUsers = async (): Promise<User[]> => {
-  const conn: Connection = await createConnection();
+  const conn: Connection = await getConnection();
   const [rows] = await conn.execute<RowDataPacket[]>("SELECT * FROM users");
   return rows as User[];
 };
@@ -26,7 +26,7 @@ export const updateUser = async (args: {
   id: number;
   user: User;
 }): Promise<User | undefined> => {
-  const conn: Connection = await createConnection();
+  const conn: Connection = await getConnection();
   const { id, ...userInput } = args.user;
   await conn.execute("UPDATE users SET name = ?, email = ? WHERE id = ?", [
     userInput.name,
@@ -47,7 +47,7 @@ export const createRandomUsers = async (): Promise<User[]> => {
   const batchSize = 100; // ปรับขนาดของ Batch ตามความเหมาะสม
 
   // สร้างการเชื่อมต่อเดียวกับฐานข้อมูล
-  const conn: Connection = await createConnection();
+  const conn: Connection = await getConnection();
 
   try {
     // เปิดการใช้งาน Transaction

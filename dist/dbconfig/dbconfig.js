@@ -1,12 +1,10 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const promise_1 = __importDefault(require("mysql2/promise"));
-const createConnection = async () => {
+exports.getConnection = void 0;
+const promise_1 = require("mysql2/promise");
+const getConnection = async () => {
     try {
-        const connection = await promise_1.default.createConnection({
+        const connection = await (0, promise_1.createConnection)({
             host: "127.0.0.1",
             user: "root",
             password: "root",
@@ -19,8 +17,8 @@ const createConnection = async () => {
         return connection;
     }
     catch (error) {
-        console.error("Error connecting to the database:", error.message);
+        console.error("Error getting a database connection:", error.message);
         throw error;
     }
 };
-exports.default = createConnection;
+exports.getConnection = getConnection;

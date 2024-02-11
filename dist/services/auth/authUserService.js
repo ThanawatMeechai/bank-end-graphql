@@ -4,12 +4,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.loginUser = exports.createUser = void 0;
-const dbconfig_1 = __importDefault(require("../../dbconfig/dbconfig"));
+const dbconfig_1 = require("../../dbconfig/dbconfig");
 const jsonwebtoken_1 = require("jsonwebtoken");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const createUser = async (args) => {
     const { name, email, password, username } = args.input;
-    const conn = await (0, dbconfig_1.default)();
+    const conn = await (0, dbconfig_1.getConnection)();
     try {
         // Hash the password
         console.log("register_username:", username);
@@ -38,7 +38,7 @@ const createUser = async (args) => {
 exports.createUser = createUser;
 const loginUser = async (args) => {
     const { password, username } = args.input;
-    const conn = await (0, dbconfig_1.default)();
+    const conn = await (0, dbconfig_1.getConnection)();
     try {
         const [existingUser] = await conn.execute("SELECT * FROM users WHERE username = ?", [username]);
         if (!existingUser || existingUser.length === 0) {

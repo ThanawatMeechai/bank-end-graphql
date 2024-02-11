@@ -1,12 +1,12 @@
 import { AuthPayload, User, UserInput, UserInputL } from "../../models/user";
 import { OkPacket, RowDataPacket, Connection } from "mysql2/promise";
-import createConnection from "../../dbconfig/dbconfig";
+import  {  getConnection } from "../../dbconfig/dbconfig";
 import { sign } from 'jsonwebtoken';
 import bcrypt from "bcrypt";
 
 export const createUser = async (args: { input: UserInput }): Promise<User> => {
   const { name, email, password, username } = args.input;
-  const conn: Connection = await createConnection();
+  const conn: Connection = await getConnection();
 
   try {
     // Hash the password
@@ -51,7 +51,7 @@ export const loginUser = async (args: {
   input: UserInputL;
 }): Promise<AuthPayload | null> => {
   const { password, username } = args.input;
-  const conn: Connection = await createConnection();
+  const conn: Connection = await getConnection();
 
   try {
     const [existingUser] = await conn.execute<RowDataPacket[]>(
