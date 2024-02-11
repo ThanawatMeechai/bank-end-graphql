@@ -7,3 +7,4 @@ export type User = {
 };
 
 export type UserInput = Pick<User, "email" | "name"|"password"|"username">;
+export type UserInputL = Pick<User, "password"|"username">;

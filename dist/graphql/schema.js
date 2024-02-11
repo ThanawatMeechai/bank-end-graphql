@@ -1,5 +1,6 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const { buildSchema } = require('graphql');
-
 const schema = buildSchema(`
   input UserInput {
     email: String!
@@ -40,5 +41,4 @@ const schema = buildSchema(`
     getUsersByEmail(email: String!): [User]
   }
 `);
-
-export default schema;
+exports.default = schema;
